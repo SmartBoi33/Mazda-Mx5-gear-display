@@ -10,6 +10,10 @@ This project aims to build an **LED Gear Display** for a Mazda MX-5, allowing re
 - Modular and easy to install in the Mazda MX-5
 - ...
 
+## Compatibility
+- Current construction and testing on the **5 Speed** Gearbox with an **IL-Motorsport Shortshifter**
+- Possible addition of standart 5 and 6 Speed compatibility in the future
+
 ## Project Structure
 The project is split into **hardware** and **software** components.
 
