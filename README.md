@@ -1,3 +1,8 @@
+## Disclaimer
+This documentation is written for Linux-based systems. Windows users will need to translate the commands or research the corresponding steps for their setup. For simplicity and clarity, this documentation will remain Linux-focused.
+
+---
+
 # LED Gear Display for Mazda MX-5
 
 ## Overview
