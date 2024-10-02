@@ -1,115 +1,139 @@
-const float RANGE_DEFAULT_1 = 528;
-const float RANGE_DEFAULT_2 = 506;
-const float RANGE_DEFAULT_3 = 532;
-const float RANGE_DEFAULT_4 = 512;
-const float THRESHOLD_1 = 0.01;
-const float THRESHOLD_2 = 0.02;
-const float THRESHOLD_3 = 0.02;
-const float THRESHOLD_4 = 0.06;
+#include <Arduino.h>
 
-char gear;
-char buf[5];
+// TYPES
+// ============================================================================================= //
+
+enum Gear {
+    REVERSE = -1,
+    NEUTRAL = 0,
+    FIRST = 1,
+    SECOND = 2,
+    THIRD = 3,
+    FOURTH = 4,
+    FIFTH = 5
+};
+
+struct SensorRange {
+    int min;
+    int max;
+};
+
+// Define the number of sensors
+#define NUM_SENSORS 4
+
+struct SensorToGearMapping {
+    Gear gear;
+    SensorRange sensor_ranges[NUM_SENSORS];  // C-style array for sensor ranges
+};
+
+// CONSTANTS
+// ============================================================================================= //
+
+Gear current_gear = Gear::NEUTRAL;
+
+// Create a list of mappings for each gear
+SensorToGearMapping gear_mappings[] = {
+    {Gear::REVERSE, {{400, 450}, {380, 420}, {400, 450}, {370, 410}}},
+    {Gear::NEUTRAL, {{530, 540}, {490, 510}, {530, 540}, {500, 520}}},
+    {Gear::FIRST, {{90, 110}, {80, 100}, {95, 115}, {100, 120}}},
+    {Gear::SECOND, {{190, 210}, {180, 200}, {195, 215}, {200, 220}}},
+    {Gear::THIRD, {{290, 310}, {280, 300}, {295, 315}, {300, 320}}},
+    {Gear::FOURTH, {{390, 410}, {380, 400}, {395, 415}, {400, 420}}},
+    {Gear::FIFTH, {{490, 510}, {480, 500}, {495, 515}, {500, 520}}},
+};
+
+// SETUP
+// ============================================================================================= //
 
 void setup() {
-  pinMode(A0, INPUT); /* Sensor left */
-  pinMode(A1, INPUT); /* Sensor top */
-  pinMode(A2, INPUT); /* Sensor right */
-  pinMode(A3, INPUT); /* Sensor bottom */
-  Serial.begin(9600);
-  //clear display
+    pinMode(A0, INPUT);  // Sensor left
+    pinMode(A1, INPUT);  // Sensor top
+    pinMode(A2, INPUT);  // Sensor right
+    pinMode(A3, INPUT);  // Sensor bottom
+    Serial.begin(9600);
+    // clear display
 }
 
-void loop(){
-  //Read signals
-  int hall_value_1 = analogRead(A0); // 0 - 1023
-  int hall_value_2 = analogRead(A3);
-  int hall_value_3 = analogRead(A1);
-  int hall_value_4 = analogRead(A2);
+// MAIN LOOP
+// ============================================================================================= //
 
-  
-  //Normalize and decide signals
-  float normalized_1 = normalize(hall_value_1, RANGE_DEFAULT_1);
-  float normalized_2 = normalize(hall_value_2, RANGE_DEFAULT_2);
-  float normalized_3 = normalize(hall_value_3, RANGE_DEFAULT_3);
-  float normalized_4 = normalize(hall_value_4, RANGE_DEFAULT_4);
+void loop() {
+    // Read signals
+    int hall_sensor_value_1 = analogRead(A0);  // 0 - 1023
+    int hall_sensor_value_2 = analogRead(A3);
+    int hall_sensor_value_3 = analogRead(A1);
+    int hall_sensor_value_4 = analogRead(A2);
 
-  bool decided_normalized_1 = decide(normalized_1, THRESHOLD_1);
-  bool decided_normalized_2 = decide(normalized_2, THRESHOLD_2);
-  bool decided_normalized_3 = decide(normalized_3, THRESHOLD_3);
-  bool decided_normalized_4 = decide(normalized_4, THRESHOLD_4);
+    // Store sensor values in a plain C-style array using NUM_SENSORS
+    int sensors[NUM_SENSORS] = {
+        hall_sensor_value_1,
+        hall_sensor_value_2,
+        hall_sensor_value_3,
+        hall_sensor_value_4
+    };
 
-  //Combine into single gear position state
-  char * state = toState(decided_normalized_1, decided_normalized_2, decided_normalized_3, decided_normalized_4);
-  int binary_state = strtol(state, NULL, 2);
+    Gear next_gear = map_sensor_values_to_gear(sensors, gear_mappings);
 
-  //Signals to gear
-  switch (binary_state) {
-  case 0b1000:
-    gear = '1';
-    break;
-  case 0b0001:
-    gear = '2';
-    break;
-  case 0b1100:
-    gear = '3';
-    break;
-  case 0b0011:
-    gear = '4';
-    break;
-  case 0b0100:
-    gear = '5';
-    break;
-  case 0b0010:
-    gear = 'R';
-    break;
-  default:
-    gear = 'N';
-    
-  }
-  //Display gear
-  
+    // Update display if needed
+    if (should_rerender(current_gear, next_gear)) {
+        current_gear = next_gear;
+        display_gear(current_gear);
+    }
 
-  // print("Raw Values:", hall_value_1, hall_value_2, hall_value_3, hall_value_4, "Normalized Values", normalized_1, normalized_2, normalized_3, normalized_4, "Decided Normalized Values:", decided_normalized_1, decided_normalized_2, decided_normalized_3, decided_normalized_4, ", State:", state, ", Gear:", gear);
-  Serial.print(hall_value_1);
-  Serial.print(" ");
-  Serial.print(hall_value_2);
-  Serial.print(" ");
-  Serial.print(hall_value_3);
-  Serial.print(" ");
-  Serial.print(hall_value_4);
-  Serial.print(" ");
-  Serial.print(500);
-  Serial.print(" ");
-  Serial.println(600);
-
-  delay(50);
+    delay(50);
 }
 
-template<typename... Args>
-void print(Args... args) {
-  ((Serial.print(args), Serial.print(" ")), ...);
-  Serial.println();
+// HELPER / UTILS
+// ============================================================================================= //
+
+bool is_within_range(int value, SensorRange range) {
+    return value >= range.min && value <= range.max;
 }
 
-float normalize(int sensor_value, float range_default){
-  float shifted_value = sensor_value - range_default;
-  float normalized_value = shifted_value / range_default;
-  return normalized_value;
+Gear map_sensor_values_to_gear(int sensor_values[NUM_SENSORS], const SensorToGearMapping mappings[]) {
+    for (int i = 0; i < sizeof(gear_mappings) / sizeof(gear_mappings[0]); ++i) {
+        const SensorToGearMapping& mapping = gear_mappings[i];
+        bool match = true;
+        for (int j = 0; j < NUM_SENSORS; ++j) {
+            if (!is_within_range(sensor_values[j], mapping.sensor_ranges[j])) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            return mapping.gear;
+        }
+    }
+
+    return Gear::NEUTRAL;
 }
 
-bool decide(float value, float threshold){
-  return value >= threshold;
-
+void display_gear(Gear gear) {
+    switch (gear) {
+        case Gear::REVERSE:
+            Serial.println("R");  // Reverse gear
+            break;
+        case Gear::FIRST:
+            Serial.println("1");  // First gear
+            break;
+        case Gear::SECOND:
+            Serial.println("2");  // Second gear
+            break;
+        case Gear::THIRD:
+            Serial.println("3");  // Third gear
+            break;
+        case Gear::FOURTH:
+            Serial.println("4");  // Fourth gear
+            break;
+        case Gear::FIFTH:
+            Serial.println("5");  // Fifth gear
+            break;
+        default:
+            Serial.println("N");  // Default to Neutral
+            break;
+    }
 }
 
-char * toState(bool value_1, bool value_2, bool value_3, bool value_4){
-  char foo[5] = {
-    value_1 ? '1' : '0',
-    value_2 ? '1' : '0',
-    value_3 ? '1' : '0',
-    value_4 ? '1' : '0',
-    '\0'
-  };
-  memcpy(buf,foo,5);
-  return buf;
+bool should_rerender(Gear current_gear, Gear next_gear) {
+    return current_gear != next_gear;
 }
