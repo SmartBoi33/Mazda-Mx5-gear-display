@@ -43,3 +43,4 @@ jobs:
 
       - name: Build and run tests in Docker
         run: make tests-in-docker
+        working-directory: ./firmware
