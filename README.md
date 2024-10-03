@@ -5,6 +5,8 @@ This documentation is written for Linux-based systems. Windows users will need t
 
 # LED Gear Display for Mazda MX-5
 
+branch: main [![Firmware CI](https://github.com/SmartBoi33/Mazda-Mx5-gear-display/actions/workflows/firmware-ci.yaml/badge.svg?branch=main)](https://github.com/SmartBoi33/Mazda-Mx5-gear-display/actions/workflows/firmware-ci.yaml)
+
 ## Overview
 This project aims to build an **LED Gear Display** for a Mazda MX-5, allowing real-time gear information to be displayed on a small LED screen.
 
