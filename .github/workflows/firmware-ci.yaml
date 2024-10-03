@@ -1,0 +1,32 @@
+name: Firmware CI
+
+on:
+  push:
+    paths:
+      - "firmware/main/**"
+  pull_request:
+    paths:
+      - "firmware/main/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          mv bin/arduino-cli /usr/local/bin/arduino-cli
+          arduino-cli config init
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+
+      - name: Install Make
+        run: sudo apt-get install make
+
+      - name: Compile Firmware
+        run: make compile
+        working-directory: ./firmware
