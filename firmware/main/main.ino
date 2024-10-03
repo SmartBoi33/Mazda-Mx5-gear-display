@@ -3,16 +3,6 @@
 // TYPES
 // ============================================================================================= //
 
-enum Gear {
-    REVERSE = -1,
-    NEUTRAL = 0,
-    FIRST = 1,
-    SECOND = 2,
-    THIRD = 3,
-    FOURTH = 4,
-    FIFTH = 5
-};
-
 struct SensorRange {
     int min;
     int max;
@@ -20,26 +10,94 @@ struct SensorRange {
 
 // Define the number of sensors
 #define NUM_SENSORS 4
-
+#define REVERSE_GEAR 1
+#define NUM_NEUTRAL_STATES 3
+#define NUM_GEARS (REVERSE_GEAR + NUM_NEUTRAL_STATES + 5)
+// Define the structure for sensor range mapping
 struct SensorToGearMapping {
-    Gear gear;
-    SensorRange sensor_ranges[NUM_SENSORS];  // C-style array for sensor ranges
+    char gear;  // Gear as a char ('R', 'N', '1', etc.)
+    SensorRange sensor_ranges[NUM_SENSORS];  // Array of sensor ranges for each gear
 };
 
 // CONSTANTS
 // ============================================================================================= //
 
-Gear current_gear = Gear::NEUTRAL;
+char default_gear = 'N';
+char current_gear = 'N';
 
-// Create a list of mappings for each gear
-SensorToGearMapping gear_mappings[] = {
-    {Gear::REVERSE, {{400, 450}, {380, 420}, {400, 450}, {370, 410}}},
-    {Gear::NEUTRAL, {{530, 540}, {490, 510}, {530, 540}, {500, 520}}},
-    {Gear::FIRST, {{90, 110}, {80, 100}, {95, 115}, {100, 120}}},
-    {Gear::SECOND, {{190, 210}, {180, 200}, {195, 215}, {200, 220}}},
-    {Gear::THIRD, {{290, 310}, {280, 300}, {295, 315}, {300, 320}}},
-    {Gear::FOURTH, {{390, 410}, {380, 400}, {395, 415}, {400, 420}}},
-    {Gear::FIFTH, {{490, 510}, {480, 500}, {495, 515}, {500, 520}}},
+// Define sensor ranges for each gear
+SensorToGearMapping gear_mappings[NUM_GEARS] = {
+    // Reverse (R)
+    {'R', {
+        {520, 535},  // sensor1
+        {500, 512},  // sensor2
+        {560, 575},  // sensor3
+        {490, 505}   // sensor4
+    }},
+
+    // Neutral - Center (N-Center)
+    {'N', {
+        {530, 545},  // sensor1
+        {495, 505},  // sensor2
+        {530, 545},  // sensor3
+        {505, 520}   // sensor4
+    }},
+
+    // Neutral - Left (N-Left)
+    {'N', {
+        {527, 537},  // sensor1
+        {500, 510},  // sensor2
+        {530, 540},  // sensor3
+        {503, 513}   // sensor4
+    }},
+
+    // Neutral - Right (N-Right)
+    {'N', {
+        {530, 542},  // sensor1
+        {490, 500},  // sensor2
+        {530, 545},  // sensor3
+        {510, 520}   // sensor4
+    }},
+
+    // First Gear (1)
+    {'1', {
+        {545, 560},  // sensor1
+        {485, 495},  // sensor2
+        {520, 535},  // sensor3
+        {510, 525}   // sensor4
+    }},
+
+    // Second Gear (2)
+    {'2', {
+        {520, 535},  // sensor1
+        {500, 515},  // sensor2
+        {515, 530},  // sensor3
+        {465, 475}   // sensor4
+    }},
+
+    // Third Gear (3)
+    {'3', {
+        {545, 560},  // sensor1
+        {570, 590},  // sensor2
+        {520, 535},  // sensor3
+        {510, 530}   // sensor4
+    }},
+
+    // Fourth Gear (4)
+    {'4', {
+        {520, 535},  // sensor1
+        {500, 515},  // sensor2
+        {555, 570},  // sensor3
+        {480, 490}   // sensor4
+    }},
+
+    // Fifth Gear (5)
+    {'5', {
+        {545, 560},  // sensor1
+        {450, 465},  // sensor2
+        {520, 535},  // sensor3
+        {510, 525}   // sensor4
+    }},
 };
 
 // SETUP
@@ -72,7 +130,7 @@ void loop() {
         hall_sensor_value_4
     };
 
-    Gear next_gear = map_sensor_values_to_gear(sensors, gear_mappings);
+    char next_gear = map_sensor_values_to_gear(sensors, gear_mappings);
 
     // Update display if needed
     if (should_rerender(current_gear, next_gear)) {
@@ -90,12 +148,12 @@ bool is_within_range(int value, SensorRange range) {
     return value >= range.min && value <= range.max;
 }
 
-Gear map_sensor_values_to_gear(int sensor_values[NUM_SENSORS], const SensorToGearMapping mappings[]) {
-    for (int i = 0; i < sizeof(gear_mappings) / sizeof(gear_mappings[0]); ++i) {
-        const SensorToGearMapping& mapping = gear_mappings[i];
+char map_sensor_values_to_gear(int sensor_values[NUM_SENSORS], const SensorToGearMapping mappings[NUM_GEARS]) {
+    for (int i = 0; i < NUM_GEARS; ++i) {
+        const SensorToGearMapping& mapping = mappings[i];
         bool match = true;
         for (int j = 0; j < NUM_SENSORS; ++j) {
-            if (!is_within_range(sensor_values[j], mapping.sensor_ranges[j])) {
+            if (sensor_values[j] < mapping.sensor_ranges[j].min || sensor_values[j] > mapping.sensor_ranges[j].max) {
                 match = false;
                 break;
             }
@@ -104,36 +162,13 @@ Gear map_sensor_values_to_gear(int sensor_values[NUM_SENSORS], const SensorToGea
             return mapping.gear;
         }
     }
-
-    return Gear::NEUTRAL;
+    return 'N';
 }
 
-void display_gear(Gear gear) {
-    switch (gear) {
-        case Gear::REVERSE:
-            Serial.println("R");  // Reverse gear
-            break;
-        case Gear::FIRST:
-            Serial.println("1");  // First gear
-            break;
-        case Gear::SECOND:
-            Serial.println("2");  // Second gear
-            break;
-        case Gear::THIRD:
-            Serial.println("3");  // Third gear
-            break;
-        case Gear::FOURTH:
-            Serial.println("4");  // Fourth gear
-            break;
-        case Gear::FIFTH:
-            Serial.println("5");  // Fifth gear
-            break;
-        default:
-            Serial.println("N");  // Default to Neutral
-            break;
-    }
+void display_gear(char gear) {
+    Serial.println(gear);
 }
 
-bool should_rerender(Gear current_gear, Gear next_gear) {
+bool should_rerender(char current_gear, char next_gear) {
     return current_gear != next_gear;
 }
