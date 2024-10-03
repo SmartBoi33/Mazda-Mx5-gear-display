@@ -1,49 +1,101 @@
-# About the Firmware
-This directory contains the firmware code, written in C++ using the Arduino framework, which controls the LED Gear Display for the Mazda MX-5. All the code runs on a single microcontroller, which reads sensor data and controls the LED display. The firmware continuously reads the sensor values on each iteration of the main loop, maps the values to the active gear, and updates the display in real-time.
+# Firmware for Mazda MX-5 LED Gear Display
 
-## Requirements
-To build and upload the firmware, you will need the following tools installed:
+This directory contains the firmware for the Mazda MX-5 LED Gear Display, written in C++ using the Arduino framework. The firmware reads sensor data and updates the LED display to show the current gear. All code runs on a single microcontroller.
 
-- [Arduino CLI](https://arduino.github.io/arduino-cli/0.35/): Required for compiling and uploading the `.ino` files to the Arduino. Follow the installation guide in the official documentation.
-- [Make](https://www.gnu.org/software/make/): Used to automate the build and upload process through the provided Makefile. Refer to the documentation for installation instructions.
+## Setup
 
-Ensure these tools are correctly configured in your system before running the Makefile commands.
+Before building or uploading the firmware, ensure the following tools are installed:
 
-## Firmware Setup
+- [Arduino CLI](https://arduino.github.io/arduino-cli/0.35/): For compiling and uploading firmware.
+- [GNU Make](https://www.gnu.org/software/make/): To automate the build and upload process via the provided Makefile.
 
-Once you have the Arduino CLI installed, follow these steps to set up the environment and prepare for compiling and uploading the firmware.
+### Install Arduino CLI
 
-### 1. Initialize and Configure Arduino CLI
-First, initialize the Arduino CLI environment:
+1. Install the Arduino CLI by following the [official installation guide](https://arduino.github.io/arduino-cli/0.35/installation/).
+2. Initialize the Arduino CLI environment:
 
-```bash
-arduino-cli config init
-```
+   ```bash
+   arduino-cli config init
+   ```
 
-This will create a configuration file in your home directory.
+   This will create the configuration file in your home directory.
 
-### 2. Update the Core Index
-To ensure that the CLI has the latest information about available boards, run:
+3. Update the core index to get the latest board information:
 
-```bash
-arduino-cli core update-index
-```
+   ```bash
+   arduino-cli core update-index
+   ```
 
-### 3. Install the Required Core for Arduino Nano
-If you are using an **Arduino Nano** board, you'll need to install the `arduino:avr` core. Run the following command:
+4. Install the required core for **Arduino Nano** (or any other board you are using). For example, for Arduino Nano:
 
-```bash
-arduino-cli core install arduino:avr
-```
+   ```bash
+   arduino-cli core install arduino:avr
+   ```
 
-This step is only necessary if your board is a Nano. If you're using a different board, refer to its specific core installation instructions.
+### Find Your Board’s FQBN
 
-### 4. Find Your Board's FQBN (Fully Qualified Board Name)
-To compile and upload the firmware, you'll need the FQBN for your specific board. You can list all supported boards with this command:
+To compile and upload the firmware, you need the Fully Qualified Board Name (FQBN) for your board. To list all supported boards, run:
 
 ```bash
 arduino-cli board listall
 ```
 
+Use the appropriate FQBN in the commands or Makefile.
 
-Once you have the correct FQBN (for example, `arduino:avr:nano`), you can proceed with compiling and uploading the firmware.
+For more detailed information on using the Arduino CLI, refer to the [Arduino CLI documentation](https://arduino.github.io/arduino-cli/0.35/).
+
+---
+
+## Development Processes
+
+This section explains how to compile and upload the firmware using the Makefile, which automates the process.
+
+### 1. Compile the Firmware
+
+To compile the firmware for the specified board using the Makefile:
+
+```bash
+make compile
+```
+
+This will compile the firmware located in the `$(SKETCH_DIR)` (default: `main`).
+
+### 2. Compile and Generate Binary
+
+To compile the firmware and store the binary in `$(BUILD_DIR)` (default: `.build`):
+
+```bash
+make binary
+```
+
+This generates a binary file in `.build`.
+
+### 3. List Connected Boards
+
+To identify which port your board is connected to, use the following command:
+
+```bash
+make board-list
+```
+
+This will list all available boards and their ports.
+
+### 4. Upload the Firmware
+
+After compiling, upload the firmware to the board connected to `$(BOARD_PORT)`:
+
+```bash
+make upload
+```
+
+This will upload the compiled firmware to the board.
+
+### 5. Clean Build Artifacts
+
+To remove all build artifacts and clean the `$(BUILD_DIR)`:
+
+```bash
+make clear
+```
+
+This will delete the contents of `.build`.
