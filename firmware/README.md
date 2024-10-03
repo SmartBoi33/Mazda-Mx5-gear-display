@@ -99,3 +99,25 @@ make clear
 ```
 
 This will delete the contents of `.build`.
+
+Here is an updated section for your README regarding running the unit tests:
+
+---
+
+## Running Unit Tests
+
+The unit tests for the firmware are written using **GoogleTest**. There are two ways to run the tests:
+
+1. **Running Locally**: To run tests locally, you need to have GoogleTest installed on your machine. Once installed, you can compile and run the tests using the provided Makefile:
+
+   ```bash
+   make tests
+   ```
+
+2. **Running in Docker**: If you prefer to avoid installing GoogleTest locally, you can use Docker. The tests can be run inside a container by running:
+
+   ```bash
+   make tests-in-docker
+   ```
+
+This will build a Docker image and run the tests within it.
