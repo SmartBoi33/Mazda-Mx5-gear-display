@@ -5,7 +5,9 @@
 
 // CONSTANTS
 char default_gear = 'N';
+// GLOBAL VARIABLES
 char current_gear = 'N';
+int delay_for_refresh_rate = get_delay_for_refresh_rate(30);
 
 // SETUP
 void setup() {
@@ -14,6 +16,7 @@ void setup() {
     pinMode(A2, INPUT);
     pinMode(A3, INPUT);
     Serial.begin(9600);
+    Serial.println(current_gear);
 }
 
 // MAIN LOOP
