@@ -35,5 +35,5 @@ void loop() {
         Serial.println(current_gear);
     }
 
-    delay(50);
+    delay(delay_for_refresh_rate);
 }
