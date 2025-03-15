@@ -41,17 +41,17 @@ void loop() {
             display_gear(current_gear); 
         }
 
-        Serial.print(sensors[0]);
-        Serial.print("  ");
-        Serial.print(sensors[1]);
-        Serial.print("  ");
-        Serial.print(sensors[2]);
-        Serial.print("  ");
-        Serial.print(sensors[3]);
-        Serial.print("  ");
-        Serial.print(300);
-        Serial.print("  ");
-        Serial.println(700);
+        // Serial.print(sensors[0]);
+        // Serial.print("  ");
+        // Serial.print(sensors[1]);
+        // Serial.print("  ");
+        // Serial.print(sensors[2]);
+        // Serial.print("  ");
+        // Serial.print(sensors[3]);
+        // Serial.print("  ");
+        // Serial.print(300);
+        // Serial.print("  ");
+        // Serial.println(700);
     }
 
     delay(delay_for_refresh_rate);
