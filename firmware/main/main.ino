@@ -27,7 +27,7 @@ void loop() {
     };
     if (isInCalibraitionMode) {
         // calibrate(sensors, gear_mappings);
-        Serial.println("C");
+        set_display('C');
     } else { // Gear Detection Mode
         char next_gear = map_sensor_values_to_gear(sensors, gear_mappings);
         set_display(next_gear);

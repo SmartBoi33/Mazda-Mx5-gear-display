@@ -12,7 +12,7 @@ LedControl lc = LedControl(
   1 // number of devices
 );
 
-const byte characters[7][8] = {
+const byte characters[8][8] = {
     {
       0b01000010,
       0b01100010,
@@ -82,7 +82,17 @@ const byte characters[7][8] = {
       0b01001000,
       0b01000100,
       0b01000010
-    }  // 'R'
+    },  // 'R'
+    {
+      0b00111100,
+      0b01000010,
+      0b10000001,
+      0b10000000,
+      0b10000000,
+      0b10000001,
+      0b01000010,
+      0b00111100
+    }  // 'C'
 };
 
 void display_pattern(byte pattern[8]) {
@@ -99,6 +109,7 @@ int map_character_to_map_index(char character) {
     case '4': return 4;
     case '5': return 5;
     case 'R': return 6;
+    case 'C': return 7;
     default: return 0; // N
   };
 }
