@@ -2,6 +2,9 @@
 #include <LedControl.h>
 #include "display.h"
 
+char initial_state = 'N';
+char display_state = initial_state;
+
 LedControl lc = LedControl(
   4, // DIN pin
   6, // CLK pin
@@ -82,16 +85,6 @@ const byte characters[7][8] = {
     }  // 'R'
 };
 
-void setup_display(){
-  lc.shutdown(0,false);
-  lc.setIntensity(0,8);
-  lc.clearDisplay(0);
-};
-
-void clear_display() {
-  lc.clearDisplay(0);
-}
-
 void display_pattern(byte pattern[8]) {
   for (int row = 0; row < 8; row++) {
     lc.setRow(0, row, pattern[row]);
@@ -110,13 +103,8 @@ int map_character_to_map_index(char character) {
   };
 }
 
-void display_characters(char character){
+void display_character(char character){
   display_pattern(characters[map_character_to_map_index(character)]);
-}
-
-void display_gear(char gear) {
-  clear_display();
-  display_characters(gear);
 }
 
 bool should_rerender(char current_gear, char next_gear) {
@@ -125,6 +113,23 @@ bool should_rerender(char current_gear, char next_gear) {
 
 Milliseconds get_delay_for_refresh_rate(Hertz refresh_rate) {
     return 1000 / refresh_rate; // ms / Hz
-};
+}
 
+void clear_display() {
+  lc.clearDisplay(0);
+}
 
+void setup_display(){
+  lc.shutdown(0,false);
+  lc.setIntensity(0,8);
+  lc.clearDisplay(0);
+  display_character(display_state);
+}
+
+void set_display(char value) {
+  if (should_rerender(display_state, value)) {
+      display_state = value;
+      clear_display();
+      display_character(display_state);
+  }
+}
