@@ -1,9 +1,16 @@
-.PHONY: compile tests tests-in-docker binary board-list upload clear
+.PHONY: install compile tests tests-in-docker binary board-list upload clear
 
 FQBN=arduino:avr:nano
 SKETCH_DIR=$(PWD)/main
 BUILD_DIR=$(PWD)/.build
 BOARD_PORT=/dev/ttyUSB0
+
+LIBRARIES = LedControl
+
+install:
+	@for lib in $(LIBRARIES); do \
+		arduino-cli lib install "$$lib"; \
+	done
 
 compile:
 	arduino-cli compile --fqbn $(FQBN) $(SKETCH_DIR)
