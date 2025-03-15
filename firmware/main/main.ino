@@ -2,35 +2,26 @@
 #include "gear_mappings.h"
 #include "gear.h"
 #include "display.h"
+#include "sensors.h"
 
 // GLOBAL VALUES
 int delay_for_refresh_rate = get_delay_for_refresh_rate(30);
 
 // SETUP
 void setup() {
-    pinMode(A1, INPUT);
-    pinMode(A2, INPUT);
-    pinMode(A3, INPUT);
-    pinMode(A4, INPUT);
-    Serial.begin(9600);
+    setup_sensors();
     setup_display();
 }
 
 // MAIN LOOP
 void loop() {
-    bool isInCalibraitionMode = digitalRead(A5);
-    int sensors[NUM_SENSORS] = {
-        analogRead(A1),
-        analogRead(A2),
-        analogRead(A3),
-        analogRead(A4)
-    };
-    if (isInCalibraitionMode) {
+    if (is_calibration_mode()) {
         // calibrate(sensors, gear_mappings);
         set_display('C');
     } else { // Gear Detection Mode
-        char next_gear = map_sensor_values_to_gear(sensors, gear_mappings);
-        set_display(next_gear);
+        SensorData data = read_sensors();
+        char gear = get_gear(data.values);
+        set_display(gear);
 
         // Serial.print(sensors[0]);
         // Serial.print("  ");
