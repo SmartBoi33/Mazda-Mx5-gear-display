@@ -4,6 +4,7 @@
 #include "display.h"
 #include "sensors.h"
 #include "commands.h"
+#include "calibration.h"
 
 // GLOBAL VALUES
 int delay_for_refresh_rate = get_delay_for_refresh_rate(30);
@@ -18,7 +19,7 @@ void setup() {
 // MAIN LOOP
 void loop() {
     if (is_calibration_mode()) {
-        // calibrate(sensors, gear_mappings);
+        calibrate();
         set_display('C');
     } else { // Gear Detection Mode
         SensorData data = read_sensors();
