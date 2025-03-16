@@ -15,7 +15,11 @@ struct SensorToGearMapping {
     SensorRange sensor_ranges[NUM_SENSORS];
 };
 
+struct SensorToGearMappings {
+    SensorToGearMapping mappings[NUM_GEARS];
+};
+
 // Gear sensor mappings
-extern SensorToGearMapping gear_mappings[NUM_GEARS];
+extern SensorToGearMappings gear_mappings;
 
 #endif

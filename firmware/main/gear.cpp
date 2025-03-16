@@ -23,5 +23,5 @@ char map_sensor_values_to_gear(const int sensor_values[NUM_SENSORS], const Senso
 
 char get_gear(int sensor_values[NUM_SENSORS]) {
     SensorData data = read_sensors();
-    return map_sensor_values_to_gear(data.values, gear_mappings);
+    return map_sensor_values_to_gear(data.values, gear_mappings.mappings);
 }
