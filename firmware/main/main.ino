@@ -3,12 +3,14 @@
 #include "gear.h"
 #include "display.h"
 #include "sensors.h"
+#include "commands.h"
 
 // GLOBAL VALUES
 int delay_for_refresh_rate = get_delay_for_refresh_rate(30);
 
 // SETUP
 void setup() {
+    setup_communication();
     setup_sensors();
     setup_display();
 }

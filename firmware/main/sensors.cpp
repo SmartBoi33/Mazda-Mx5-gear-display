@@ -6,7 +6,6 @@ void setup_sensors() {
     pinMode(A2, INPUT);
     pinMode(A3, INPUT);
     pinMode(A4, INPUT);
-    Serial.begin(9600);
 }
 
 bool is_calibration_mode() {
