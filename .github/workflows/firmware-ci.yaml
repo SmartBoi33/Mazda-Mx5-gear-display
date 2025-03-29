@@ -3,9 +3,11 @@ name: Firmware CI
 on:
   push:
     paths:
+      - ".github/workflows/firmware-ci.yaml"
       - "firmware/**"
   pull_request:
     paths:
+      - ".github/workflows/firmware-ci.yaml"
       - "firmware/**"
 
 jobs:
