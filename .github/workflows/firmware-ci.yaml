@@ -31,6 +31,7 @@ jobs:
 
       - name: Install firmware dependencies
         run: make install
+        working-directory: ./firmware
 
       - name: Compile Firmware
         run: make compile
