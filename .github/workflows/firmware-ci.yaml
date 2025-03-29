@@ -41,8 +41,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v1
+      - name: Set up Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          mv bin/arduino-cli /usr/local/bin/arduino-cli
+          arduino-cli config init
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
 
       - name: Install make and gtest
         run: sudo apt-get install make libgtest-dev
