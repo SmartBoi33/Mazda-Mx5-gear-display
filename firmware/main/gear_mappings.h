@@ -1,9 +1,9 @@
 #ifndef GEAR_MAPPINGS_H
 #define GEAR_MAPPINGS_H
 
-#include "sensors.h"
-
-#define NUM_GEARS 9
+#include <limits.h>
+#include "number_of_sensors.h"
+#include "number_of_gears.h"
 
 struct SensorRange {
     int min;
@@ -12,14 +12,13 @@ struct SensorRange {
 
 struct SensorToGearMapping {
     char gear;
-    SensorRange sensor_ranges[NUM_SENSORS];
+    SensorRange sensor_ranges[NUMBER_OF_SENSORS];
 };
 
 struct SensorToGearMappings {
-    SensorToGearMapping mappings[NUM_GEARS];
+    SensorToGearMapping mappings[NUMBER_OF_GEARS];
 };
 
-// Gear sensor mappings
-extern SensorToGearMappings gear_mappings;
+SensorToGearMappings empty_mapping();
 
 #endif

@@ -1,15 +1,14 @@
 #include "gear_mappings.h"
 
-SensorToGearMappings gear_mappings = {
-    .mappings = {
-        {'R', {{530, 540}, {550, 565}, {500, 520}, {510, 520}}},
-        {'N', {{530, 545}, {495, 505}, {530, 545}, {505, 520}}}, // Left
-        {'N', {{527, 537}, {500, 510}, {530, 540}, {503, 513}}}, // Mid
-        {'N', {{530, 542}, {490, 500}, {530, 545}, {510, 520}}}, // Right
-        {'1', {{517, 530}, {523, 533}, {515, 539}, {535, 555}}},
-        {'2', {{550, 565}, {535, 545}, {500, 525}, {505, 522}}},
-        {'3', {{517, 527}, {525, 535}, {520, 530}, {525, 535}}},
-        {'4', {{540, 560}, {542, 552}, {505, 515}, {510, 520}}},
-        {'5', {{515, 525}, {525, 535}, {532, 542}, {517, 527}}}
-    }
-};
+SensorToGearMappings empty_mapping() {
+    return SensorToGearMappings {
+        {
+            {'1', {{INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}}},
+            {'2', {{INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}}},
+            {'3', {{INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}}},
+            {'4', {{INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}}},
+            {'5', {{INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}}},
+            {'R', {{INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}, {INT_MAX, INT_MIN}}}
+        }
+    };
+}

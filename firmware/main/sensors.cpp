@@ -8,10 +8,6 @@ void setup_sensors() {
     pinMode(A4, INPUT);
 }
 
-bool is_calibration_mode() {
-    return digitalRead(A5);
-}
-
 SensorData read_sensors() {
     SensorData data = {
         .values = {

@@ -1,0 +1,6 @@
+#ifndef NUMBER_OF_SENSORS_H
+#define NUMBER_OF_SENSORS_H
+
+#define NUMBER_OF_SENSORS 4
+
+#endif
