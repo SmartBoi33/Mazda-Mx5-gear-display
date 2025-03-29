@@ -27,6 +27,9 @@ jobs:
       - name: Install Make
         run: sudo apt-get install make
 
+      - name: Install firmware dependencies
+        run: make install
+
       - name: Compile Firmware
         run: make compile
         working-directory: ./firmware
